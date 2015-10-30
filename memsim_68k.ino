@@ -52,8 +52,8 @@ uint16_t read_word(uint16_t address) {
       break;
     }
   }
-  data |= PORTA;  //capture data
-  data |= (PORTC << 8);
+  data |= PINA;  //capture data
+  data |= (PINC << 8);
   // Negate as, lds and uds
   digitalWrite(LDS, HIGH);
   digitalWrite(UDS, HIGH);
@@ -92,6 +92,7 @@ void write_word(uint16_t address, uint16_t data) {
   PORTC = 0x00;
   DDRA = 0x00; // data lines back to input
   DDRC = 0x00;
+  digitalWrite(RW, HIGH); // read
 }
 
 uint8_t read_byte(uint16_t address) {
@@ -114,11 +115,11 @@ uint8_t read_byte(uint16_t address) {
   }
   if (is_even(address)) {
     // Read upper data lines
-    data = PORTC;
+    data = PINC;
   }
   else {
     //Read lower data lines
-    data = PORTA;
+    data = PINA;
   }
 
   // Negate as, lds and uds
@@ -157,11 +158,10 @@ void write_byte(uint16_t address, uint8_t data) {
   PORTC = 0x00;
   DDRA = 0x00; // data lines back to input
   DDRC = 0x00;
+  digitalWrite(RW, HIGH); // read
 }
 
 void setup() {
-  TCCR4B &= ~(uint8_t)7; // 32KHZ enable clock
-  TCCR4B |= CS00;
   DDRL = 0xFF; //Lower address lines
   DDRG |= 0b00000011; //upper address lines
   PORTL = 0x00;
